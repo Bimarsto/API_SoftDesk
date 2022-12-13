@@ -23,6 +23,9 @@ class Project(models.Model):
     author_user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL,
                                        on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.title
+
 
 class Contributor(models.Model):
     user_id = models.ManyToManyField(User)
