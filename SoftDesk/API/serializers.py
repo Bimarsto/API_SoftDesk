@@ -98,11 +98,22 @@ class IssueDetailSerializer(ModelSerializer):
 
     def get_comments(self, instance):
         queryset = Comment.objects.filter(issue_id=instance.id)
-        serializer = CommentSerializer(queryset, many=True)
+        serializer = CommentListSerializer(queryset, many=True)
         return serializer.data
 
 
-class CommentSerializer(ModelSerializer):
+class CommentListSerializer(ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = [
+            'id',
+            'description',
+            'issue_id'
+        ]
+
+
+class CommentDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Comment
@@ -113,3 +124,4 @@ class CommentSerializer(ModelSerializer):
             'issue_id',
             'created_time',
         ]
+
