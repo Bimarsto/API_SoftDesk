@@ -1,9 +1,22 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.response import Response
+from rest_framework import status
 
-from .models import Project, Issue, Comment
+from .models import Project, Issue, Comment, Contributor
 from .serializers import ProjectListSerializer, ProjectDetailSerializer,\
     IssueListSerializer, IssueDetailSerializer, \
-    CommentListSerializer, CommentDetailSerializer
+    CommentListSerializer, CommentDetailSerializer, \
+    ContributorSerializer, UserSignupSerializer
+
+
+class SignupViewSet(ModelViewSet):
+
+    def post(self, request):
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status.HTTP_201_CREATED)
+        return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectViewSet(ModelViewSet):
@@ -18,6 +31,14 @@ class ProjectViewSet(ModelViewSet):
         if self.action == 'retrieve':
             return self.detail_serializer_class
         return super().get_serializer_class()
+
+
+class ContributorViewSet(ModelViewSet):
+
+    serializer_class = ContributorSerializer
+
+    def get_queryset(self):
+        return Contributor.objects.all()
 
 
 class IssueViewSet(ModelViewSet):

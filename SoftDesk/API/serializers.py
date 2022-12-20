@@ -1,18 +1,24 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Project, Issue, Comment, User, Contributor
 
 
-class UserSerializer(ModelSerializer):
+class UserSignupSerializer(ModelSerializer):
+
+    tokens = SerializerMethodField()
 
     class Meta:
         model = User
-        fields = [
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            'password',
-        ]
+        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'tokens']
+
+    @staticmethod
+    def get_tokens_for_user(instance):
+        tokens = RefreshToken.for_user(instance)
+        data = {
+            'refresh': str(tokens),
+            'access': str(tokens.access_token)
+        }
+        return data
 
 
 class ContributorSerializer(ModelSerializer):
