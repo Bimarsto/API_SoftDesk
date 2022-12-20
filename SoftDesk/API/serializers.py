@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Project, Issue, Comment, User, Contributor
@@ -9,10 +10,16 @@ class UserSignupSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'email', 'password', 'tokens']
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password', 'tokens']
 
     @staticmethod
-    def get_tokens_for_user(instance):
+    def validate_password(value):
+        if value is not None:
+            return make_password(value)
+        raise ValidationError("Password is empty")
+
+    @staticmethod
+    def get_tokens(instance):
         tokens = RefreshToken.for_user(instance)
         data = {
             'refresh': str(tokens),
