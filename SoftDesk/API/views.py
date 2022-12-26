@@ -2,12 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Project, Issue, Comment, Contributor
 from .serializers import ProjectListSerializer, ProjectDetailSerializer,\
     IssueListSerializer, IssueDetailSerializer, \
     CommentListSerializer, CommentDetailSerializer, \
     ContributorSerializer, UserSignupSerializer
+from .permissions import ProjectPermission, IssuePermission, CommentPermission
 
 
 class SignupViewSet(APIView):
@@ -22,6 +24,7 @@ class SignupViewSet(APIView):
 
 class ProjectViewSet(ModelViewSet):
 
+    permission_classes = [ProjectPermission]
     serializer_class = ProjectListSerializer
     detail_serializer_class = ProjectDetailSerializer
 
@@ -36,6 +39,7 @@ class ProjectViewSet(ModelViewSet):
 
 class ContributorViewSet(ModelViewSet):
 
+    permission_classes = [IsAuthenticated]
     serializer_class = ContributorSerializer
 
     def get_queryset(self):
@@ -44,6 +48,7 @@ class ContributorViewSet(ModelViewSet):
 
 class IssueViewSet(ModelViewSet):
 
+    permission_classes = [IssuePermission]
     serializer_class = IssueListSerializer
     detail_serializer_class = IssueDetailSerializer
 
@@ -58,6 +63,7 @@ class IssueViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
 
+    permission_classes = [CommentPermission]
     serializer_class = CommentListSerializer
     detail_serializer_class = CommentDetailSerializer
 
