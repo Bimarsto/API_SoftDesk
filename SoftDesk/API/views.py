@@ -37,6 +37,12 @@ class ProjectViewSet(ModelViewSet):
             return self.detail_serializer_class
         return super().get_serializer_class()
 
+    def create(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        request.data['author_user_id'] = request.user.id
+        request.POST._mutable = False
+        return super().create(request, *args, **kwargs)
+
 
 class ContributorViewSet(ModelViewSet):
 
