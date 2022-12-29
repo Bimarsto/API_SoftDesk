@@ -36,8 +36,6 @@ class ContributorSerializer(ModelSerializer):
             'id',
             'user_id',
             'project_id',
-            'permission',
-            'role',
         ]
 
 
@@ -85,7 +83,7 @@ class IssueListSerializer(ModelSerializer):
             'priority',
             'status',
             'assignee_user_id',
-            'author_user_id'
+            'author_user_id',
         ]
 
 

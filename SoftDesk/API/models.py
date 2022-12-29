@@ -76,7 +76,6 @@ class Issue(models.Model):
 
 
 class Comment(models.Model):
-    # comment_id ?
     description = models.CharField(max_length=1500)
     author_user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL,
                                        on_delete=models.CASCADE)
