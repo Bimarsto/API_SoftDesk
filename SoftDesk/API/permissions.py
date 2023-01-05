@@ -25,6 +25,16 @@ class ProjectPermission(BasePermission):
             return is_contributor(request.user, obj)
 
 
+class ContributorPermission(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user and request.user.is_authenticated:
+            if view.action in ['retrieve', 'list', 'create', 'update', 'partial_update', 'destroy']:
+                return is_author(request.user, obj)
+            if view.action in ['retrieve', 'list']:
+                return is_contributor(request.user, obj)
+
+
 class IssuePermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):

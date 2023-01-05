@@ -10,7 +10,8 @@ from .serializers import ProjectListSerializer, ProjectDetailSerializer,\
     IssueListSerializer, IssueDetailSerializer, \
     CommentListSerializer, CommentDetailSerializer, \
     ContributorSerializer, UserSignupSerializer
-from .permissions import ProjectPermission, IssuePermission, CommentPermission
+from .permissions import ProjectPermission, IssuePermission, \
+    CommentPermission, ContributorPermission
 
 
 class SignupViewSet(APIView):
@@ -43,10 +44,16 @@ class ProjectViewSet(ModelViewSet):
         request.POST._mutable = False
         return super().create(request, *args, **kwargs)
 
+    def update(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        request.data['author_user_id'] = request.user.id
+        request.POST._mutable = False
+        return super().update(request, *args, **kwargs)
+
 
 class ContributorViewSet(ModelViewSet):
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [ContributorPermission]
     serializer_class = ContributorSerializer
 
     def get_queryset(self, *args, **kwargs):
@@ -56,6 +63,22 @@ class ContributorViewSet(ModelViewSet):
         except Project.DoesNotExist:
             raise NotFound('A Project with that id does not exist')
         return Contributor.objects.filter(project_id=project)
+
+    def create(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        project_id = self.kwargs.get('project_id_pk')
+        project = Project.objects.get(id=project_id)
+        request.data['project_id'] = project.id
+        request.POST._mutable = False
+        return super().create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        project_id = self.kwargs.get('project_id_pk')
+        project = Project.objects.get(id=project_id)
+        request.data['project_id'] = project.id
+        request.POST._mutable = False
+        return super().list(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
         project_id = self.kwargs.get('project_id_pk')
@@ -87,6 +110,14 @@ class IssueViewSet(ModelViewSet):
             return self.detail_serializer_class
         return super().get_serializer_class()
 
+    def retrieve(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        project_id = self.kwargs.get('project_id_pk')
+        project = Project.objects.get(id=project_id)
+        request.data['project_id'] = project.id
+        request.POST._mutable = False
+        return super().retrieve(request, *args, **kwargs)
+
     def create(self, request, *args, **kwargs):
         request.POST._mutable = True
         request.data['author_user_id'] = request.user.id
@@ -97,6 +128,17 @@ class IssueViewSet(ModelViewSet):
         request.data['project_id'] = project.id
         request.POST._mutable = False
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        request.data['author_user_id'] = request.user.id
+        if not request.data['assignee_user_id']:
+            request.data["assignee_user_id"] = request.user.id
+        project_id = self.kwargs.get('project_id_pk')
+        project = Project.objects.get(id=project_id)
+        request.data['project_id'] = project.id
+        request.POST._mutable = False
+        return super().update(request, *args, **kwargs)
 
 
 class CommentViewSet(ModelViewSet):
@@ -121,3 +163,12 @@ class CommentViewSet(ModelViewSet):
         request.data['issue_id'] = issue.id
         request.POST._mutable = False
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        request.POST._mutable = True
+        request.data['author_user_id'] = request.user.id
+        issue_id = self.kwargs.get('issue_id_pk')
+        issue = Issue.objects.get(id=issue_id)
+        request.data['issue_id'] = issue.id
+        request.POST._mutable = False
+        return super().update(request, *args, **kwargs)
