@@ -1,4 +1,4 @@
-# API_SoftDesk# API_SoftDesk
+# API_SoftDesk
 Project done for my OpenClassrooms Python Application Developer course.  
 This is an API made with Django for a fictitious company, SoftDesk.  
 The application is used to report projects issues. 
